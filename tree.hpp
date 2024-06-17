@@ -1,46 +1,35 @@
-//
-// Created by guy on 6/17/24.
-//
+#ifndef TREE_HPP
+#define TREE_HPP
 
-#ifndef CPP_EX4_TREE_H
-#define CPP_EX4_TREE_H
-
-#include <vector>
-#include <iostream>
+#include "node.hpp"
+#include "tree_iterators.hpp"
 #include <queue>
 #include <stack>
+#include <iterator>
 #include <algorithm>
-#include "node.hpp"
+#include <functional>
 
-template <typename T, int k = 2>
-class Tree;
-
-#include "tree_iterators.hpp"
-
-template <typename T, int k = 2>
+template <typename T, int K = 2>
 class Tree {
-private:
-    Node<T>* root;
-
 public:
-    Tree() : root(nullptr) {}
-    ~Tree() { clear(root); }
+    using PreOrderIterator = ::PreOrderIterator<T, K>;
+    using PostOrderIterator = ::PostOrderIterator<T, K>;
+    using InOrderIterator = ::InOrderIterator<T, K>;
+    using BFSIterator = ::BFSIterator<T, K>;
+    using DFSIterator = ::DFSIterator<T, K>;
 
-    void add_root(Node<T>* node) { root = node; }
-    void add_sub_node(Node<T>* parent, Node<T>* child) {
-        if (parent->children.size() < k) {
-            parent->children.push_back(child);
-        } else {
-            throw std::runtime_error("Cannot add child to full node");
-        }
+    Tree() : root(nullptr) {}
+    ~Tree() { clear(); }
+
+    void add_root(Node<T>& node) {
+        root = &node;
     }
 
-    // Iterators
-    using PreOrderIterator = ::PreOrderIterator<T, k>;
-    using PostOrderIterator = ::PostOrderIterator<T, k>;
-    using InOrderIterator = ::InOrderIterator<T, k>;
-    using BFSIterator = ::BFSIterator<T, k>;
-    using DFSIterator = ::DFSIterator<T, k>;
+    void add_sub_node(Node<T>& parent, Node<T>& child) {
+        if (parent.children.size() < K) {
+            parent.children.push_back(&child);
+        }
+    }
 
     PreOrderIterator begin_pre_order() { return PreOrderIterator(root); }
     PreOrderIterator end_pre_order() { return PreOrderIterator(nullptr); }
@@ -57,43 +46,56 @@ public:
     DFSIterator begin_dfs() { return DFSIterator(root); }
     DFSIterator end_dfs() { return DFSIterator(nullptr); }
 
-    // Heap conversion
-    template <typename Iterator>
-    std::pair<Iterator, Iterator> myHeap(Iterator first, Iterator last) {
-        std::vector<Node<T>*> vec;
-        while (first != last) {
-            vec.push_back(&(*first));
-            ++first;
-        }
-        std::make_heap(vec.begin(), vec.end(), [](Node<T>* a, Node<T>* b) {
-            return a->value > b->value;
+    void myHeap() {
+        std::vector<Node<T>*> nodes;
+        collect_nodes(root, nodes);
+
+        std::make_heap(nodes.begin(), nodes.end(), [](Node<T>* a, Node<T>* b) {
+            return a->get_value() > b->get_value();
         });
-        return std::make_pair(vec.begin(), vec.end());
+
+        root = nodes.front();
+        rebuild_heap(nodes);
+    }
+
+    void clear() {
+        delete root;
+        root = nullptr;
     }
 
     friend std::ostream& operator<<(std::ostream& os, const Tree& tree) {
-        tree.print(os, tree.root, 0);
+        // Placeholder for GUI output
+        os << "Tree with root: " << (tree.root ? tree.root->get_value() : T()) << std::endl;
         return os;
     }
 
 private:
-    void clear(Node<T>* node) {
-        if (node) {
-            for (auto child : node->children) {
-                clear(child);
-            }
-            delete node;
+    Node<T>* root;
+
+    void collect_nodes(Node<T>* node, std::vector<Node<T>*>& nodes) {
+        if (!node) return;
+        nodes.push_back(node);
+        for (Node<T>* child : node->children) {
+            collect_nodes(child, nodes);
         }
     }
 
-    void print(std::ostream& os, Node<T>* node, int depth) const {
-        if (node) {
-            os << std::string(depth * 2, ' ') << node->value << std::endl;
-            for (auto child : node->children) {
-                print(os, child, depth + 1);
+    void rebuild_heap(const std::vector<Node<T>*>& nodes) {
+        std::queue<Node<T>*> queue;
+        queue.push(nodes.front());
+
+        size_t index = 1;
+        while (!queue.empty() && index < nodes.size()) {
+            Node<T>* current = queue.front();
+            queue.pop();
+
+            current->children.clear();
+            for (int i = 0; i < K && index < nodes.size(); ++i) {
+                current->children.push_back(nodes[index++]);
+                queue.push(current->children.back());
             }
         }
     }
 };
 
-#endif //CPP_EX4_TREE_H
+#endif // TREE_HPP

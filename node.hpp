@@ -1,9 +1,5 @@
-//
-// Created by guy on 6/17/24.
-//
-
-#ifndef CPP_EX4_NODE_H
-#define CPP_EX4_NODE_H
+#ifndef NODE_HPP
+#define NODE_HPP
 
 #include <vector>
 
@@ -14,6 +10,15 @@ public:
     std::vector<Node<T>*> children;
 
     Node(T val) : value(val) {}
+    ~Node() {
+        for (auto child : children) {
+            delete child;
+        }
+    }
+
+    T get_value() const {
+        return value;
+    }
 };
 
-#endif //CPP_EX4_NODE_H
+#endif // NODE_HPP

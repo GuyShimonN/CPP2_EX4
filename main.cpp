@@ -1,84 +1,78 @@
-#include "tree.hpp"
-#include "complex.hpp"
 #include <iostream>
+#include <string>
+#include "node.hpp"
+#include "tree.hpp"
 
-int main() {
-    // Demonstrate Integer Tree
-    Tree<int> intTree;
-    Node<int>* root = new Node<int>(1);
-    intTree.add_root(root);
+using namespace std;
 
-    Node<int>* child1 = new Node<int>(2);
-    Node<int>* child2 = new Node<int>(3);
-    Node<int>* child3 = new Node<int>(4);
-    Node<int>* child4 = new Node<int>(5);
-    intTree.add_sub_node(root, child1);
-    intTree.add_sub_node(root, child2);
-    intTree.add_sub_node(child1, child3);
-    intTree.add_sub_node(child1, child4);
+int main()
+{
+    Node<double> root_node = Node<double>(1.1);
+    Tree<double> tree; // Binary tree that contains doubles.
+    tree.add_root(root_node);
 
-    std::cout << "Integer Tree:" << std::endl;
-    std::cout << intTree;
+    Node<double> n1 = Node<double>(1.2);
+    Node<double> n2 = Node<double>(1.3);
+    Node<double> n3 = Node<double>(1.4);
+    Node<double> n4 = Node<double>(1.5);
+    Node<double> n5 = Node<double>(1.6);
 
-    std::cout << "Pre-order traversal: ";
-    for (auto it = intTree.begin_pre_order(); it != intTree.end_pre_order(); ++it) {
-        std::cout << it->value << " ";
+    tree.add_sub_node(root_node, n1);
+    tree.add_sub_node(root_node, n2);
+    tree.add_sub_node(n1, n3);
+    tree.add_sub_node(n1, n4);
+    tree.add_sub_node(n2, n5);
+
+    // Pre-Order Traversal
+    auto pre_order = tree.begin_pre_order();
+    while (pre_order.has_next()) {
+        cout << pre_order.next()->get_value() << endl;
     }
-    std::cout << std::endl;
 
-    std::cout << "Post-order traversal: ";
-    for (auto it = intTree.begin_post_order(); it != intTree.end_post_order(); ++it) {
-        std::cout << it->value << " ";
+    // Post-Order Traversal
+    auto post_order = tree.begin_post_order();
+    while (post_order.has_next()) {
+        cout << post_order.next()->get_value() << endl;
     }
-    std::cout << std::endl;
 
-    std::cout << "In-order traversal: ";
-    for (auto it = intTree.begin_in_order(); it != intTree.end_in_order(); ++it) {
-        std::cout << it->value << " ";
+    // In-Order Traversal
+    auto in_order = tree.begin_in_order();
+    while (in_order.has_next()) {
+        cout << in_order.next()->get_value() << endl;
     }
-    std::cout << std::endl;
 
-    std::cout << "BFS traversal: ";
-    for (auto it = intTree.begin_bfs(); it != intTree.end_bfs(); ++it) {
-        std::cout << it->value << " ";
+    // BFS Traversal
+    auto bfs = tree.begin_bfs();
+    while (bfs.has_next()) {
+        cout << bfs.next()->get_value() << endl;
     }
-    std::cout << std::endl;
 
-    std::cout << "DFS traversal: ";
-    for (auto it = intTree.begin_dfs(); it != intTree.end_dfs(); ++it) {
-        std::cout << it->value << " ";
+    // DFS Traversal
+    auto dfs = tree.begin_dfs();
+    while (dfs.has_next()) {
+        cout << dfs.next()->get_value() << endl;
     }
-    std::cout << std::endl;
 
-    // Demonstrate Complex Tree
-    Tree<Complex> complexTree;
-    Node<Complex>* complexRoot = new Node<Complex>(Complex(1, 2));
-    complexTree.add_root(complexRoot);
+    // Output the tree structure (placeholder for GUI)
+    cout << tree;
 
-    Node<Complex>* complexChild1 = new Node<Complex>(Complex(3, 4));
-    Node<Complex>* complexChild2 = new Node<Complex>(Complex(5, 6));
-    complexTree.add_sub_node(complexRoot, complexChild1);
-    complexTree.add_sub_node(complexRoot, complexChild2);
+    // Create a 3-ary tree (tree with max 3 children per node)
+    Tree<double,3> three_ary_tree;
+    three_ary_tree.add_root(root_node);
+    three_ary_tree.add_sub_node(root_node, n1);
+    three_ary_tree.add_sub_node(root_node, n2);
+    three_ary_tree.add_sub_node(root_node, n3);
+    three_ary_tree.add_sub_node(n1, n4);
+    three_ary_tree.add_sub_node(n2, n5);
 
-    std::cout << "\nComplex Tree:" << std::endl;
-    std::cout << complexTree;
-
-    // Demonstrate heap conversion
-    std::cout << "Heap (first 3 elements): ";
-    auto heapIterators = intTree.myHeap(intTree.begin_bfs(), intTree.end_bfs());
-    for (int i = 0; i < 3 && heapIterators.first != heapIterators.second; ++i, ++heapIterators.first) {
-        std::cout << (*heapIterators.first)->value << " ";
-    }
-    std::cout << std::endl;
-
-    // Demonstrate error handling
-    try {
-        intTree.add_sub_node(child1, new Node<int>(6));
-        intTree.add_sub_node(child1, new Node<int>(7));
-        intTree.add_sub_node(child1, new Node<int>(8)); // This should throw
-    } catch (const std::exception& e) {
-        std::cout << "Caught exception: " << e.what() << std::endl;
-    }
+    // The 3-ary tree should look like:
+    /**
+     *       root = 1.1
+     *     /      |     \
+     *    1.2    1.3    1.4
+     *   /        |
+     *  1.5      1.6
+     */
 
     return 0;
 }

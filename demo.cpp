@@ -1,6 +1,3 @@
-//
-// Created by guy on 6/17/24.
-//
 /**
  * Demo app for Ex4
  */
@@ -10,7 +7,7 @@
 #include "tree.hpp"
 
 using namespace std;
-
+using namespace ariel;
 int main()
 {
 

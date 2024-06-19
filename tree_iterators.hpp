@@ -1,140 +1,271 @@
-#ifndef TREE_ITERATORS_HPP
-#define TREE_ITERATORS_HPP
+#ifndef CPP_EX4_TREE_ITERATORS_H
+#define CPP_EX4_TREE_ITERATORS_H
 
-#include "node.hpp"
-#include <queue>
 #include <stack>
+#include <queue>
+#include <stdexcept>
+#include "node.hpp"
 
-template <typename T, int K>
-class Tree;
+namespace ariel {
 
-template <typename T, int K>
-class PreOrderIterator {
-private:
-    std::stack<Node<T>*> stack;
-public:
-    PreOrderIterator(Node<T>* root) {
-        if (root) stack.push(root);
-    }
-    bool has_next() const {
-        return !stack.empty();
-    }
-    Node<T>* next() {
-        Node<T>* node = stack.top();
-        stack.pop();
-        for (auto it = node->children.rbegin(); it != node->children.rend(); ++it) {
-            stack.push(*it);
+    template<typename T, int k>
+    class Tree;
+
+    template<typename T, int k>
+    class PreOrderIterator {
+    private:
+        std::stack<Node<T> *> nodeStack;
+    public:
+        PreOrderIterator(Node<T> *root) {
+            if (root) nodeStack.push(root);
         }
-        return node;
-    }
-};
 
-template <typename T, int K>
-class PostOrderIterator {
-private:
-    std::stack<Node<T>*> stack;
-    Node<T>* last_visited;
-public:
-    PostOrderIterator(Node<T>* root) {
-        if (root) stack.push(root);
-        last_visited = nullptr;
-    }
-    bool has_next() const {
-        return !stack.empty();
-    }
-    Node<T>* next() {
-        while (!stack.empty()) {
-            Node<T>* current = stack.top();
-            if (!current->children.empty() && last_visited != current->children.back()) {
-                for (auto it = current->children.rbegin(); it != current->children.rend(); ++it) {
-                    stack.push(*it);
+        Node<T> &operator*() const {
+            if (nodeStack.empty()) {
+                throw std::out_of_range("PreOrderIterator: Dereferencing an empty iterator");
+            }
+            return *nodeStack.top();
+        }
+
+        Node<T> *operator->() const {
+            if (nodeStack.empty()) {
+                throw std::out_of_range("PreOrderIterator: Dereferencing an empty iterator");
+            }
+            return nodeStack.top();
+        }
+
+        PreOrderIterator &operator++() {
+            if (!nodeStack.empty()) {
+                Node<T> *current = nodeStack.top();
+                nodeStack.pop();
+                for (int i = current->children.size() - 1; i >= 0; --i) {
+                    nodeStack.push(current->children[i]);
                 }
-            } else {
-                last_visited = current;
-                stack.pop();
-                return current;
+            }
+            return *this;
+        }
+
+        bool operator==(const PreOrderIterator &other) const {
+            return nodeStack == other.nodeStack;
+        }
+
+        bool operator!=(const PreOrderIterator &other) const {
+            return !(*this == other);
+        }
+    };
+
+    template<typename T, int k>
+    class PostOrderIterator {
+    private:
+        std::stack<Node<T> *> nodeStack;
+        Node<T> *lastVisited;
+
+        void pushLeftmostBranch(Node<T> *node) {
+            while (node) {
+                nodeStack.push(node);
+                if (!node->children.empty()) {
+                    node = node->children[0];
+                } else {
+                    node = nullptr;
+                }
             }
         }
-        return nullptr;
-    }
-};
 
-template <typename T, int K>
-class InOrderIterator {
-private:
-    std::stack<Node<T>*> stack;
-    Node<T>* current;
-public:
-    InOrderIterator(Node<T>* root) : current(root) {
-        while (current && !current->children.empty()) {
-            stack.push(current);
-            current = current->children.front();
+        bool isLastChild(Node<T> *parent, Node<T> *child) {
+            return !parent->children.empty() && parent->children.back() == child;
         }
-    }
-    bool has_next() const {
-        return current || !stack.empty();
-    }
-    Node<T>* next() {
-        while (current) {
-            stack.push(current);
-            if (!current->children.empty()) {
-                current = current->children.front();
-            } else {
-                current = nullptr;
+
+    public:
+        PostOrderIterator(Node<T> *root) {
+            lastVisited = nullptr;
+            if (root) pushLeftmostBranch(root);
+        }
+
+        Node<T> &operator*() const {
+            if (nodeStack.empty()) {
+                throw std::out_of_range("PostOrderIterator: Dereferencing an empty iterator");
+            }
+            return *nodeStack.top();
+        }
+
+        Node<T> *operator->() const {
+            if (nodeStack.empty()) {
+                throw std::out_of_range("PostOrderIterator: Dereferencing an empty iterator");
+            }
+            return nodeStack.top();
+        }
+
+        PostOrderIterator &operator++() {
+            if (!nodeStack.empty()) {
+                Node<T> *current = nodeStack.top();
+                if (current->children.empty() || (lastVisited && isLastChild(current, lastVisited))) {
+                    nodeStack.pop();
+                    lastVisited = current;
+                } else {
+                    pushLeftmostBranch(current->children.back());
+                }
+            }
+            return *this;
+        }
+
+        bool operator==(const PostOrderIterator &other) const {
+            return nodeStack == other.nodeStack && lastVisited == other.lastVisited;
+        }
+
+        bool operator!=(const PostOrderIterator &other) const {
+            return !(*this == other);
+        }
+    };
+
+    template<typename T, int k>
+    class InOrderIterator {
+    private:
+        std::stack<Node<T> *> nodeStack;
+        Node<T> *current;
+    public:
+        InOrderIterator(Node<T> *root) : current(root) {
+            pushLeftmostBranch(root);
+        }
+
+        Node<T> &operator*() const {
+            if (nodeStack.empty()) {
+                throw std::out_of_range("InOrderIterator: Dereferencing an empty iterator");
+            }
+            return *nodeStack.top();
+        }
+
+        Node<T> *operator->() const {
+            if (nodeStack.empty()) {
+                throw std::out_of_range("InOrderIterator: Dereferencing an empty iterator");
+            }
+            return nodeStack.top();
+        }
+
+        InOrderIterator &operator++() {
+            if (!nodeStack.empty()) {
+                Node<T> *node = nodeStack.top();
+                nodeStack.pop();
+                if (!node->children.empty()) {
+                    pushLeftmostBranch(node->children[0]);
+                }
+            }
+            return *this;
+        }
+
+        bool operator==(const InOrderIterator &other) const {
+            return nodeStack == other.nodeStack && current == other.current;
+        }
+
+        bool operator!=(const InOrderIterator &other) const {
+            return !(*this == other);
+        }
+
+    private:
+        void pushLeftmostBranch(Node<T> *node) {
+            while (node) {
+                nodeStack.push(node);
+                if (!node->children.empty()) {
+                    node = node->children[0];
+                } else {
+                    node = nullptr;
+                }
             }
         }
-        current = stack.top();
-        stack.pop();
-        Node<T>* node = current;
-        if (!current->children.empty()) {
-            current = current->children.back();
-        } else {
-            current = nullptr;
-        }
-        return node;
-    }
-};
+    };
 
-template <typename T, int K>
-class BFSIterator {
-private:
-    std::queue<Node<T>*> queue;
-public:
-    BFSIterator(Node<T>* root) {
-        if (root) queue.push(root);
-    }
-    bool has_next() const {
-        return !queue.empty();
-    }
-    Node<T>* next() {
-        Node<T>* node = queue.front();
-        queue.pop();
-        for (Node<T>* child : node->children) {
-            queue.push(child);
+    template<typename T, int k>
+    class BFSIterator {
+    private:
+        std::queue<Node<T> *> nodeQueue;
+    public:
+        BFSIterator(Node<T> *root) {
+            if (root) nodeQueue.push(root);
         }
-        return node;
-    }
-};
 
-template <typename T, int K>
-class DFSIterator {
-private:
-    std::stack<Node<T>*> stack;
-public:
-    DFSIterator(Node<T>* root) {
-        if (root) stack.push(root);
-    }
-    bool has_next() const {
-        return !stack.empty();
-    }
-    Node<T>* next() {
-        Node<T>* node = stack.top();
-        stack.pop();
-        for (auto it = node->children.rbegin(); it != node->children.rend(); ++it) {
-            stack.push(*it);
+        BFSIterator(typename std::vector<Node<T>*>::iterator begin, typename std::vector<Node<T>*>::iterator end) {
+            while (begin != end) {
+                nodeQueue.push(*begin);
+                ++begin;
+            }
         }
-        return node;
-    }
-};
 
-#endif // TREE_ITERATORS_HPP
+        Node<T> &operator*() const {
+            if (nodeQueue.empty()) {
+                throw std::out_of_range("BFSIterator: Dereferencing an empty iterator");
+            }
+            return *nodeQueue.front();
+        }
+
+        Node<T> *operator->() const {
+            if (nodeQueue.empty()) {
+                throw std::out_of_range("BFSIterator: Dereferencing an empty iterator");
+            }
+            return nodeQueue.front();
+        }
+
+        BFSIterator &operator++() {
+            if (!nodeQueue.empty()) {
+                Node<T> *current = nodeQueue.front();
+                nodeQueue.pop();
+                for (auto child: current->children) {
+                    nodeQueue.push(child);
+                }
+            }
+            return *this;
+        }
+
+        bool operator==(const BFSIterator &other) const {
+            return nodeQueue == other.nodeQueue;
+        }
+
+        bool operator!=(const BFSIterator &other) const {
+            return !(*this == other);
+        }
+    };
+
+    template<typename T, int k>
+    class DFSIterator {
+    private:
+        std::stack<Node<T> *> nodeStack;
+    public:
+        DFSIterator(Node<T> *root) {
+            if (root) nodeStack.push(root);
+        }
+
+        Node<T> &operator*() const {
+            if (nodeStack.empty()) {
+                throw std::out_of_range("DFSIterator: Dereferencing an empty iterator");
+            }
+            return *nodeStack.top();
+        }
+
+        Node<T> *operator->() const {
+            if (nodeStack.empty()) {
+                throw std::out_of_range("DFSIterator: Dereferencing an empty iterator");
+            }
+            return nodeStack.top();
+        }
+
+        DFSIterator &operator++() {
+            if (!nodeStack.empty()) {
+                Node<T> *current = nodeStack.top();
+                nodeStack.pop();
+                for (int i = current->children.size() - 1; i >= 0; --i) {
+                    nodeStack.push(current->children[i]);
+                }
+            }
+            return *this;
+        }
+
+        bool operator==(const DFSIterator &other) const {
+            return nodeStack == other.nodeStack;
+        }
+
+        bool operator!=(const DFSIterator &other) const {
+            return !(*this == other);
+        }
+    };
+
+}
+
+#endif //CPP_EX4_TREE_ITERATORS_H

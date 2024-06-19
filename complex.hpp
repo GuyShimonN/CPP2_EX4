@@ -1,22 +1,25 @@
-//
-// Created by guy on 6/17/24.
-//
-
 #ifndef CPP_EX4_COMPLEX_H
 #define CPP_EX4_COMPLEX_H
 
 #include <iostream>
 
-class Complex {
-public:
-    double real, imag;
+namespace ariel {
+    class Complex {
+    public:
+        int real;
+        int imag;
 
-    Complex(double r = 0, double i = 0) : real(r), imag(i) {}
+        Complex(int r, int i) : real(r), imag(i) {}
 
-    friend std::ostream& operator<<(std::ostream& os, const Complex& c) {
-        os << "(" << c.real << ", " << c.imag << ")";
-        return os;
-    }
-};
+        bool operator>(const Complex &other) const {
+            return real > other.real || (real == other.real && imag > other.imag);
+        }
+
+        friend std::ostream &operator<<(std::ostream &os, const Complex &c) {
+            os << c.real << "+" << c.imag << "i";
+            return os;
+        }
+    };
+}
 
 #endif //CPP_EX4_COMPLEX_H

@@ -3,6 +3,25 @@
 #include <iostream>
 
 int main() {
+
+    ariel::Tree<double,3> tree;
+    ariel::Node<double>* root1 = new ariel::Node<double>(1.1);
+    tree.add_root(root1);
+    ariel::Node<double>* n1 = new ariel::Node<double>(1.2);
+    ariel::Node<double>* n2 = new ariel::Node<double>(1.3);
+    ariel::Node<double>* n3 = new ariel::Node<double>(1.4);
+    ariel::Node<double>* n4 = new ariel::Node<double>(1.5);
+    ariel::Node<double>* n5 = new ariel::Node<double>(1.6);
+    tree.add_sub_node(root1, n1);
+    tree.add_sub_node(root1, n2);
+    tree.add_sub_node(root1, n3);
+    tree.add_sub_node(n1, n4);
+    tree.add_sub_node(n1, n5);
+    for(auto it = tree.begin_pre_order(); it != tree.end_pre_order(); ++it){
+        std::cout << it->value << " ";
+    }
+
+
     // Demonstrate Integer Tree
     ariel::Tree<int> intTree;
     ariel::Node<int>* root = new ariel::Node<int>(1);
@@ -25,19 +44,26 @@ int main() {
         std::cout << it->value << " ";
     }
     std::cout << std::endl;
-
-//    std::cout << "Post-order traversal: ";
-//    for (auto it = intTree.begin_post_order(); it != intTree.end_post_order(); ++it) {
-//        std::cout << it->value << " ";
-//    }
-//    std::cout << std::endl;
-
-//    std::cout << "In-order traversal: ";
-//    for (auto it = intTree.begin_in_order(); it != intTree.end_in_order(); ++it) {
-//        std::cout << it->value << " ";
-//    }
-//    std::cout << std::endl;
-
+try {
+    std::cout << "Post-order traversal: ";
+    for (auto it = intTree.begin_post_order(); it != intTree.end_post_order(); ++it) {
+        std::cout << it->value << " ";
+    }
+    std::cout << std::endl;
+}
+catch (const std::exception& e) {
+    std::cout << "Caught exception: " << e.what() << std::endl;
+}
+try {
+    std::cout << "In-order traversal: ";
+    for (auto it = intTree.begin_in_order(); it != intTree.end_in_order(); ++it) {
+        std::cout << it->value << " ";
+    }
+    std::cout << std::endl;
+}
+catch (const std::exception& e) {
+    std::cout << "Caught exception: " << e.what() << std::endl;
+}
     std::cout << "BFS traversal: ";
     for (auto it = intTree.begin_bfs(); it != intTree.end_bfs(); ++it) {
         std::cout << it->value << " ";

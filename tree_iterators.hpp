@@ -17,7 +17,9 @@ namespace ariel {
         std::stack<Node<T> *> nodeStack;
     public:
         PreOrderIterator(Node<T> *root) {
+
             if (root) nodeStack.push(root);
+
         }
 
         Node<T> &operator*() const {
@@ -43,6 +45,11 @@ namespace ariel {
                 }
             }
             return *this;
+        }
+        PreOrderIterator &operator++(int) {
+            PreOrderIterator tmp = *this;
+            ++(*this);
+            return tmp;
         }
 
         bool operator==(const PreOrderIterator &other) const {
@@ -94,18 +101,24 @@ namespace ariel {
             }
             return nodeStack.top();
         }
-
         PostOrderIterator &operator++() {
-            if (!nodeStack.empty()) {
-                Node<T> *current = nodeStack.top();
-                if (current->children.empty() || (lastVisited && isLastChild(current, lastVisited))) {
-                    nodeStack.pop();
-                    lastVisited = current;
-                } else {
-                    pushLeftmostBranch(current->children.back());
+            if (nodeStack.empty()) {
+                throw std::out_of_range("PostOrderIterator: Incrementing an empty iterator");
+            }
+            Node<T> *node = nodeStack.top();
+            nodeStack.pop();
+            if (node->children.size() > 0 && lastVisited != node->children.back()) {
+                for (int i = node->children.size() - 1; i >= 0; --i) {
+                    nodeStack.push(node->children[i]);
                 }
             }
+            lastVisited = node;
             return *this;
+        }
+        PostOrderIterator &operator++(int) {
+            PostOrderIterator tmp = *this;
+            ++(*this);
+            return tmp;
         }
 
         bool operator==(const PostOrderIterator &other) const {
@@ -150,6 +163,11 @@ namespace ariel {
                 }
             }
             return *this;
+        }
+        InOrderIterator &operator++(int) {
+            InOrderIterator tmp = *this;
+            ++(*this);
+            return tmp;
         }
 
         bool operator==(const InOrderIterator &other) const {

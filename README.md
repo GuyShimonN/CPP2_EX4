@@ -9,4 +9,7 @@ This project implements a generic k-ary tree container in C++. The main componen
 
 The project does not use any external libraries. The GUI output is not yet implemented.
 
-To build the project, run `make tree`.
+To build the project, run `cd /home/guy/CLionProjects/CPP_EX4/cmake-build-debug
+ninja
+./TreeVisualization
+`.

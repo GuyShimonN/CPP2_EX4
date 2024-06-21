@@ -2,6 +2,7 @@
 #define CPP_EX4_COMPLEX_H
 
 #include <iostream>
+#include <string>
 
 namespace ariel {
     class Complex {
@@ -13,6 +14,10 @@ namespace ariel {
 
         bool operator>(const Complex &other) const {
             return real > other.real || (real == other.real && imag > other.imag);
+        }
+
+        std::string toString() const {
+            return std::to_string(real) + "+" + std::to_string(imag) + "i";
         }
 
         friend std::ostream &operator<<(std::ostream &os, const Complex &c) {

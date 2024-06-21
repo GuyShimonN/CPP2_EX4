@@ -33,25 +33,20 @@ namespace ariel {
         }
 
         // Iterators
-        PreOrderIterator<T, k> begin_pre_order() { return PreOrderIterator<T, k>(root); }
+        PreOrderIterator<T, k> begin_pre_order() const { return PreOrderIterator<T, k>(root); }
+        PreOrderIterator<T, k> end_pre_order() const { return PreOrderIterator<T, k>(nullptr); }
 
-        PreOrderIterator<T, k> end_pre_order() { return PreOrderIterator<T, k>(nullptr); }
+        PostOrderIterator<T, k> begin_post_order() const { return PostOrderIterator<T, k>(root); }
+        PostOrderIterator<T, k> end_post_order() const { return PostOrderIterator<T, k>(nullptr); }
 
-        PostOrderIterator<T, k> begin_post_order() { return PostOrderIterator<T, k>(root); }
+        InOrderIterator<T, k> begin_in_order() const { return InOrderIterator<T, k>(root); }
+        InOrderIterator<T, k> end_in_order() const { return InOrderIterator<T, k>(nullptr); }
 
-        PostOrderIterator<T, k> end_post_order() { return PostOrderIterator<T, k>(nullptr); }
+        BFSIterator<T, k> begin_bfs() const { return BFSIterator<T, k>(root); }
+        BFSIterator<T, k> end_bfs() const { return BFSIterator<T, k>(nullptr); }
 
-        InOrderIterator<T, k> begin_in_order() { return InOrderIterator<T, k>(root); }
-
-        InOrderIterator<T, k> end_in_order() { return InOrderIterator<T, k>(nullptr); }
-
-        BFSIterator<T, k> begin_bfs() { return BFSIterator<T, k>(root); }
-
-        BFSIterator<T, k> end_bfs() { return BFSIterator<T, k>(nullptr); }
-
-        DFSIterator<T, k> begin_dfs() { return DFSIterator<T, k>(root); }
-
-        DFSIterator<T, k> end_dfs() { return DFSIterator<T, k>(nullptr); }
+        DFSIterator<T, k> begin_dfs() const { return DFSIterator<T, k>(root); }
+        DFSIterator<T, k> end_dfs() const { return DFSIterator<T, k>(nullptr); }
 
         // Heap conversion
         template<typename Iterator>

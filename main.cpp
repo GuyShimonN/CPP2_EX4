@@ -4,23 +4,28 @@
 
 int main() {
 
-    ariel::Tree<double,3> tree;
+    ariel::Tree<double,2> tree;
     ariel::Node<double>* root1 = new ariel::Node<double>(1.1);
     tree.add_root(root1);
     ariel::Node<double>* n1 = new ariel::Node<double>(1.2);
     ariel::Node<double>* n2 = new ariel::Node<double>(1.3);
-    ariel::Node<double>* n3 = new ariel::Node<double>(1.4);
+//    ariel::Node<double>* n3 = new ariel::Node<double>(1.4);
     ariel::Node<double>* n4 = new ariel::Node<double>(1.5);
     ariel::Node<double>* n5 = new ariel::Node<double>(1.6);
     tree.add_sub_node(root1, n1);
     tree.add_sub_node(root1, n2);
-    tree.add_sub_node(root1, n3);
+//    tree.add_sub_node(root1, n3);
     tree.add_sub_node(n1, n4);
     tree.add_sub_node(n1, n5);
     for(auto it = tree.begin_pre_order(); it != tree.end_pre_order(); ++it){
         std::cout << it->value << " ";
     }
+    std::cout << std::endl;
 
+//    for (auto it = tree.begin_in_order();it!=tree.end_in_order(); ++it) {
+//        std::cout << it->value << " ";
+//    }
+    std::cout << std::endl;
 
     // Demonstrate Integer Tree
     ariel::Tree<int> intTree;
@@ -31,10 +36,12 @@ int main() {
     ariel::Node<int>* child2 = new ariel::Node<int>(3);
     ariel::Node<int>* child3 = new ariel::Node<int>(4);
     ariel::Node<int>* child4 = new ariel::Node<int>(5);
+    ariel::Node<int>* child5 = new ariel::Node<int>(6);
     intTree.add_sub_node(root, child1);
     intTree.add_sub_node(root, child2);
     intTree.add_sub_node(child1, child3);
     intTree.add_sub_node(child1, child4);
+    intTree.add_sub_node(child2, child5);
 
     std::cout << "Integer Tree:" << std::endl;
     std::cout << intTree;

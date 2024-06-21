@@ -107,11 +107,25 @@ namespace ariel {
             }
             Node<T> *node = nodeStack.top();
             nodeStack.pop();
+            if (nodeStack.empty()) {
+                lastVisited = nullptr;
+//                nodeStack= nullptr;
+                return *this;
+            }
+
+            if (nodeStack.top()->children.size() > 0 && lastVisited != nodeStack.top()->children.back()) {
+                Node<T> *node1 = nodeStack.top();
+                nodeStack.push(node1->children.back());
+                lastVisited = node1->children.back();
+                return *this;
+
+            }
             if (node->children.size() > 0 && lastVisited != node->children.back()) {
                 for (int i = node->children.size() - 1; i >= 0; --i) {
                     nodeStack.push(node->children[i]);
                 }
             }
+
             lastVisited = node;
             return *this;
         }
@@ -156,13 +170,18 @@ namespace ariel {
 
         InOrderIterator &operator++() {
             if (!nodeStack.empty()) {
-                Node<T> *node = nodeStack.top();
+                Node < T > *node = nodeStack.top();
                 nodeStack.pop();
+
                 if (!node->children.empty()) {
-                    pushLeftmostBranch(node->children[0]);
+                    pushLeftmostBranch(node->children[1]);
+                }
+                if (nodeStack.empty()) {
+                    current = nullptr;
                 }
             }
-            return *this;
+                return *this;
+
         }
         InOrderIterator &operator++(int) {
             InOrderIterator tmp = *this;

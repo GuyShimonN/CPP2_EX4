@@ -379,3 +379,63 @@ TEST_CASE("Modifying the tree structure works correctly") {
 
     REQUIRE(expected_pre_order == actual_pre_order);
 }
+
+TEST_CASE("tree whit more then 2 children"){
+
+    ariel::Tree<int, 3> tree;
+    ariel::Node<int>* root = new ariel::Node<int>(1);
+    tree.add_root(root);
+
+    ariel::Node<int>* child1 = new ariel::Node<int>(2);
+    ariel::Node<int>* child2 = new ariel::Node<int>(3);
+    ariel::Node<int>* child3 = new ariel::Node<int>(4);
+    ariel::Node<int>* child4 = new ariel::Node<int>(5);
+    ariel::Node<int>* child5 = new ariel::Node<int>(6);
+    ariel::Node<int>* child6 = new ariel::Node<int>(7);
+    tree.add_sub_node(root, child1);
+    tree.add_sub_node(root, child2);
+    tree.add_sub_node(root, child3);
+    tree.add_sub_node(child1, child4);
+    tree.add_sub_node(child1, child5);
+    tree.add_sub_node(child1, child6);
+
+    std::vector<int> expected_pre_order = {1, 2, 5, 6, 7,3, 4};
+    std::vector<int> actual_pre_order;
+
+    for (auto it = tree.begin_pre_order(); it != tree.end_pre_order(); ++it) {
+        actual_pre_order.push_back(it->value);
+    }
+
+    REQUIRE(expected_pre_order == actual_pre_order);
+    std::vector<int> actual_BFS;
+    for(auto it = tree.begin_bfs(); it != tree.end_bfs(); ++it){
+       actual_BFS.push_back(it->value);
+    }
+    std::vector<int> expected_BFS = {1, 2, 3, 4, 5, 6, 7};
+
+    REQUIRE(expected_BFS == actual_BFS);
+
+    std::vector<int> actual_DFS;
+    for(auto it = tree.begin_dfs(); it != tree.end_dfs(); ++it){
+       actual_DFS.push_back(it->value);
+    }
+    std::vector<int> expected_DFS = {1, 2, 5, 6, 7, 3 , 4};
+
+    REQUIRE(expected_DFS == actual_DFS);
+
+    std::vector<int> actual_post_order;
+    for(auto it = tree.begin_post_order(); it != tree.end_post_order(); ++it){
+       actual_post_order.push_back(it->value);
+    }
+    std::vector<int> expected_post_order = {1, 2, 5, 6, 7, 3, 4};
+
+    REQUIRE(expected_post_order == actual_post_order);
+
+    std::vector<int> actual_in_order;
+    for(auto it = tree.begin_in_order(); it != tree.end_in_order(); ++it){
+       actual_in_order.push_back(it->value);
+    }
+    std::vector<int> expected_in_order = {1, 2, 5, 6, 7, 3, 4};
+
+    REQUIRE(expected_in_order == actual_in_order);
+}

@@ -32,7 +32,6 @@ private:
     void displayDoubleTree(QGraphicsScene *scene);
     void displayIntTree(QGraphicsScene *scene);
     void displayComplexTree(QGraphicsScene *scene);
-    void displayStringTree(QGraphicsScene *scene);
 
     template<typename T, int K>
     void displayTreeTraversal(const ariel::Tree<T, K>& tree, QGraphicsScene *scene);

@@ -1,12 +1,19 @@
 #include <QApplication>
 #include "mainwindow.hpp"
+#include <iostream>
+#include <QTimer>
 
 int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
 
+    std::cout << "Creating MainWindow..." << std::endl;
     MainWindow mainWindow;
-    mainWindow.show();
+    std::cout << "MainWindow created." << std::endl;
 
+    // Add a small delay
+    QTimer::singleShot(100, &mainWindow, &QWidget::show);
+
+    std::cout << "Entering event loop..." << std::endl;
     return app.exec();
 }
 //

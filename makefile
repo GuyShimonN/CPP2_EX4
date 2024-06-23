@@ -1,10 +1,15 @@
+CXX = g++
+CXXFLAGS = -std=c++17 -fPIC
+QTINCLUDE = $(shell pkg-config --cflags Qt5Widgets)
+QTLIBS = $(shell pkg-config --libs Qt5Widgets)
+
 all: test
 
 test: test_tree.o
-	g++ -o test test_tree.o -std=c++11
+	$(CXX) -o $@ $^ $(CXXFLAGS) $(QTINCLUDE) $(QTLIBS)
 
 test_tree.o: test_tree.cpp
-	g++ -c test_tree.cpp -std=c++11
+	$(CXX) -c $< $(CXXFLAGS) $(QTINCLUDE)
 
 clean:
 	rm -f *.o test

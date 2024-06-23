@@ -179,7 +179,6 @@ TEST_CASE("Single node tree iterators work correctly") {
     REQUIRE(expected_single_node == actual_dfs);
 }
 
-// Test case for complex number tree
 TEST_CASE("Complex number tree iterators work correctly") {
     ariel::Tree<ariel::Complex> tree;
     ariel::Node<ariel::Complex>* root = new ariel::Node<ariel::Complex>(ariel::Complex(1, 2));
@@ -190,11 +189,11 @@ TEST_CASE("Complex number tree iterators work correctly") {
     tree.add_sub_node(root, child1);
     tree.add_sub_node(root, child2);
 
-    std::vector<std::string> expected_pre_order = {"1+2i", "3+4i", "5+6i"};
+    std::vector<std::string> expected_pre_order = {"1.000000 + 2.000000i", "3.000000 + 4.000000i", "5.000000 + 6.000000i"};
     std::vector<std::string> actual_pre_order;
 
     for (auto it = tree.begin_pre_order(); it != tree.end_pre_order(); ++it) {
-        actual_pre_order.push_back(it->value.toString());
+        actual_pre_order.push_back(it->value.to_string());
     }
 
     REQUIRE(expected_pre_order == actual_pre_order);

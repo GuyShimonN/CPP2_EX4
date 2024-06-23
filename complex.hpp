@@ -1,30 +1,22 @@
-#ifndef CPP_EX4_COMPLEX_H
-#define CPP_EX4_COMPLEX_H
+#ifndef COMPLEX_HPP
+#define COMPLEX_HPP
 
-#include <iostream>
 #include <string>
 
 namespace ariel {
+
     class Complex {
     public:
-        int real;
-        int imag;
+        double real;
+        double imag;
 
-        Complex(int r, int i) : real(r), imag(i) {}
+        Complex(double r = 0, double i = 0) : real(r), imag(i) {}
 
-        bool operator>(const Complex &other) const {
-            return real > other.real || (real == other.real && imag > other.imag);
-        }
-
-        std::string toString() const {
-            return std::to_string(real) + "+" + std::to_string(imag) + "i";
-        }
-
-        friend std::ostream &operator<<(std::ostream &os, const Complex &c) {
-            os << c.real << "+" << c.imag << "i";
-            return os;
+        std::string to_string() const {
+            return std::to_string(real) + " + " + std::to_string(imag) + "i";
         }
     };
+
 }
 
-#endif //CPP_EX4_COMPLEX_H
+#endif // COMPLEX_HPP

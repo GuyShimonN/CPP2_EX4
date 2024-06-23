@@ -6,8 +6,13 @@
 #include <queue>
 #include <stack>
 #include <algorithm>
+#include <type_traits>
 #include "node.hpp"
 #include "tree_iterators.hpp"
+#include <QGraphicsScene>
+#include <QGraphicsEllipseItem>
+#include <QGraphicsTextItem>
+#include "complex.hpp"
 
 namespace ariel {
 
@@ -15,6 +20,35 @@ namespace ariel {
     class Tree {
     private:
         Node<T> *root;
+
+        void drawNode(QGraphicsScene* scene, Node<T>* node, double x, double y, double hSpacing, double vSpacing, int level) const {
+            if (!node) return;
+
+            // Draw the node
+            QGraphicsEllipseItem* ellipse = scene->addEllipse(x - 20, y - 20, 40, 40);
+            QString nodeText;
+            if constexpr (std::is_same_v<T, Complex>) {
+                nodeText = QString::fromStdString(node->value.to_string());
+            } else {
+                nodeText = QString::fromStdString(std::to_string(node->value));
+            }
+            QGraphicsTextItem* text = scene->addText(nodeText);
+            text->setPos(x - 10, y - 10);
+
+            // Draw children
+            double childrenWidth = hSpacing * (k - 1);
+            double startX = x - childrenWidth / 2;
+            for (int i = 0; i < node->children.size(); ++i) {
+                double childX = startX + i * hSpacing;
+                double childY = y + vSpacing;
+
+                // Draw line to child
+                scene->addLine(x, y + 20, childX, childY - 20);
+
+                // Recursively draw child
+                drawNode(scene, node->children[i], childX, childY, hSpacing / 2, vSpacing, level + 1);
+            }
+        }
 
     public:
         Tree() : root(nullptr) {}
@@ -32,7 +66,6 @@ namespace ariel {
             }
         }
 
-        // Iterators
         PreOrderIterator<T, k> begin_pre_order() const { return PreOrderIterator<T, k>(root); }
         PreOrderIterator<T, k> end_pre_order() const { return PreOrderIterator<T, k>(nullptr); }
 
@@ -48,7 +81,6 @@ namespace ariel {
         DFSIterator<T, k> begin_dfs() const { return DFSIterator<T, k>(root); }
         DFSIterator<T, k> end_dfs() const { return DFSIterator<T, k>(nullptr); }
 
-        // Heap conversion
         template<typename Iterator>
         std::pair<Iterator, Iterator> myHeap(Iterator first, Iterator last) {
             std::vector<Node<T>*> vec;
@@ -65,6 +97,15 @@ namespace ariel {
         friend std::ostream &operator<<(std::ostream &os, const Tree &tree) {
             tree.print(os, tree.root, 0);
             return os;
+        }
+
+        void drawTree(QGraphicsScene* scene) const {
+            if (!root) return;
+
+            double hSpacing = 200;  // Horizontal spacing between nodes
+            double vSpacing = 100;  // Vertical spacing between levels
+
+            drawNode(scene, root, scene->width() / 2, 50, hSpacing, vSpacing, 0);
         }
 
     private:

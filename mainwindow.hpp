@@ -8,6 +8,7 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include "tree.hpp"
+#include "complex.hpp"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -26,15 +27,26 @@ private:
     QTextEdit *textOutput;
     QVBoxLayout *mainLayout;
     QHBoxLayout *contentLayout;
+    QGraphicsScene *doubleScene;
+    QGraphicsScene *intScene;
+    QGraphicsScene *complexScene;
+    QGraphicsScene *stringScene;
 
     void setupUI();
-    void setupTree();
-    void displayDoubleTree(QGraphicsScene *scene);
-    void displayIntTree(QGraphicsScene *scene);
-    void displayComplexTree(QGraphicsScene *scene);
+    void setupTrees();
+    void displayDoubleTree();
+    void displayIntTree();
+    void displayComplexTree();
+    void displayStringTree();
 
     template<typename T, int K>
-    void displayTreeTraversal(const ariel::Tree<T, K>& tree, QGraphicsScene *scene);
+    void displayTreeTraversal(const ariel::Tree<T, K>& tree);
+
+    template<typename T>
+    void drawTree(QGraphicsScene* scene, const ariel::Node<T>* node, qreal x, qreal y, qreal xOffset, qreal levelHeight);
+
+    template<typename T, int K>
+    void setupAndDrawTree(const ariel::Tree<T, K>& tree, QGraphicsScene* scene);
 };
 
 #endif // MAINWINDOW_HPP

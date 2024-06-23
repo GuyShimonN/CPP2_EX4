@@ -53,6 +53,8 @@ namespace ariel {
 
         void add_root(Node<T> *node) { root = node; }
 
+        Node<T>* get_root() const { return root; }
+
         void add_sub_node(Node<T> *parent, Node<T> *child) {
             if (parent->children.size() < k) {
                 parent->children.push_back(child);
@@ -99,14 +101,15 @@ namespace ariel {
             return os;
         }
 
-        void drawTree(QGraphicsScene *scene, double xOffset = 0) const {
+        void drawTree(QGraphicsScene* scene, double xOffset = 0, double yOffset = 0) const {
             if (!root) return;
 
             double hSpacing = 200;  // Horizontal spacing between nodes
             double vSpacing = 100;  // Vertical spacing between levels
 
-            drawNode(scene, root, xOffset + scene->width() / 8, 50, hSpacing, vSpacing, 0);
+            drawNode(scene, root, xOffset + scene->width() / 4, yOffset, hSpacing, vSpacing, 0);
         }
+
     };
 
 } // namespace ariel

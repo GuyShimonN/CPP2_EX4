@@ -180,7 +180,7 @@ namespace ariel {
                     current = nullptr;
                 }
             }
-                return *this;
+            return *this;
 
         }
         InOrderIterator &operator++(int) {
@@ -218,6 +218,7 @@ namespace ariel {
         BFSIterator(Node<T> *root) {
             if (root) nodeQueue.push(root);
         }
+
 
         BFSIterator(typename std::vector<Node<T>*>::iterator begin, typename std::vector<Node<T>*>::iterator end) {
             while (begin != end) {
@@ -265,6 +266,7 @@ namespace ariel {
     private:
         std::stack<Node<T> *> nodeStack;
     public:
+
         DFSIterator(Node<T> *root) {
             if (root) nodeStack.push(root);
         }

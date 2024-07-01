@@ -4,7 +4,10 @@
 #include <QGraphicsLineItem>
 #include <QGraphicsTextItem>
 #include <QString>
-
+#include "tree.hpp"
+#include "complex.hpp"
+#include "tree_iterators.hpp"
+using namespace ariel;
 MainWindow::MainWindow(QWidget *parent)
         : QMainWindow(parent)
         , ui(new Ui::MainWindow)

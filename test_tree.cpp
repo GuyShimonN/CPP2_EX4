@@ -439,3 +439,66 @@ TEST_CASE("tree whit more then 2 children"){
 
     REQUIRE(expected_in_order == actual_in_order);
 }
+
+TEST_CASE("Heap functionality") {
+    SECTION("Binary tree to min heap") {
+        ariel::Tree<int> tree;
+        ariel::Node<int>* root = new ariel::Node<int>(5);
+        tree.add_root(root);
+        tree.add_sub_node(root, new ariel::Node<int>(3));
+        tree.add_sub_node(root, new ariel::Node<int>(7));
+        tree.add_sub_node(root->children[0], new ariel::Node<int>(2));
+        tree.add_sub_node(root->children[0], new ariel::Node<int>(4));
+        tree.add_sub_node(root->children[1], new ariel::Node<int>(6));
+        tree.add_sub_node(root->children[1], new ariel::Node<int>(8));
+
+        std::cout << "Calling myHeap()" << std::endl;
+        std::vector<int> heap = tree.myHeap();
+
+        std::vector<int> expected = {2, 3, 4, 5, 6, 7, 8};
+
+        std::cout << "Expected: ";
+        for (const auto& val : expected) {
+            std::cout << val << " ";
+        }
+        std::cout << std::endl;
+
+        std::cout << "Actual: ";
+        for (const auto& val : heap) {
+            std::cout << val << " ";
+        }
+        std::cout << std::endl;
+
+        REQUIRE(expected == heap);
+    }
+
+    SECTION("Tree with duplicate values to heap") {
+        ariel::Tree<int> tree;
+        ariel::Node<int>* root = new ariel::Node<int>(3);
+        tree.add_root(root);
+        tree.add_sub_node(root, new ariel::Node<int>(3));
+        tree.add_sub_node(root, new ariel::Node<int>(2));
+        tree.add_sub_node(root->children[0], new ariel::Node<int>(1));
+        tree.add_sub_node(root->children[0], new ariel::Node<int>(3));
+
+        std::cout << "Calling myHeap() for duplicate values test" << std::endl;
+        std::vector<int> heap = tree.myHeap();
+
+        std::vector<int> expected = {1, 2, 3};
+
+        std::cout << "Expected: ";
+        for (const auto& val : expected) {
+            std::cout << val << " ";
+        }
+        std::cout << std::endl;
+
+        std::cout << "Actual: ";
+        for (const auto& val : heap) {
+            std::cout << val << " ";
+        }
+        std::cout << std::endl;
+
+        REQUIRE(expected == heap);
+    }
+}
+

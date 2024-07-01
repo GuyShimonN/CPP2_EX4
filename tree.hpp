@@ -23,7 +23,30 @@ namespace ariel {
 
         void drawNode(QGraphicsScene *scene, Node<T> *node, double x, double y, double hSpacing, double vSpacing,
                       int level) const {
-            // ... (implementation remains the same)
+            if (!node) return;
+
+            QGraphicsEllipseItem* ellipse = scene->addEllipse(x - 20, y - 20, 40, 40);
+            QString nodeText;
+            if constexpr (std::is_same_v<T, Complex>) {
+                nodeText = QString::fromStdString(node->value.to_string());
+            } else if constexpr (std::is_same_v<T, std::string>) {
+                nodeText = QString::fromStdString(node->value);
+            } else {
+                nodeText = QString::number(node->value);
+            }
+            QGraphicsTextItem* text = scene->addText(nodeText);
+            text->setPos(x - 10, y - 10);
+
+            double childrenWidth = hSpacing * (k - 1);
+            double startX = x - childrenWidth / 2;
+            for (int i = 0; i < node->children.size(); ++i) {
+                double childX = startX + i * hSpacing;
+                double childY = y + vSpacing;
+
+                scene->addLine(x, y + 20, childX, childY - 20);
+
+                drawNode(scene, node->children[i], childX, childY, hSpacing / 2, vSpacing, level + 1);
+            }
         }
 
         void clear(Node<T> *node) {
@@ -63,17 +86,53 @@ namespace ariel {
             }
         }
 
-        PreOrderIterator<T, k> begin_pre_order() const { return PreOrderIterator<T, k>(root); }
+        auto begin_pre_order() const {
+            if constexpr (k <= 2) {
+                return PreOrderIterator<T, k>(root);
+            } else {
+                return DFSIterator<T, k>(root);
+            }
+        }
 
-        PreOrderIterator<T, k> end_pre_order() const { return PreOrderIterator<T, k>(nullptr); }
+        auto end_pre_order() const {
+            if constexpr (k <= 2) {
+                return PreOrderIterator<T, k>(nullptr);
+            } else {
+                return DFSIterator<T, k>(nullptr);
+            }
+        }
 
-        PostOrderIterator<T, k> begin_post_order() const { return PostOrderIterator<T, k>(root); }
+        auto begin_post_order() const {
+            if constexpr (k <= 2) {
+                return PostOrderIterator<T, k>(root);
+            } else {
+                return DFSIterator<T, k>(root);
+            }
+        }
 
-        PostOrderIterator<T, k> end_post_order() const { return PostOrderIterator<T, k>(nullptr); }
+        auto end_post_order() const {
+            if constexpr (k <= 2) {
+                return PostOrderIterator<T, k>(nullptr);
+            } else {
+                return DFSIterator<T, k>(nullptr);
+            }
+        }
 
-        InOrderIterator<T, k> begin_in_order() const { return InOrderIterator<T, k>(root); }
+        auto begin_in_order() const {
+            if constexpr (k <= 2) {
+                return InOrderIterator<T, k>(root);
+            } else {
+                return DFSIterator<T, k>(root);
+            }
+        }
 
-        InOrderIterator<T, k> end_in_order() const { return InOrderIterator<T, k>(nullptr); }
+        auto end_in_order() const {
+            if constexpr (k <= 2) {
+                return InOrderIterator<T, k>(nullptr);
+            } else {
+                return DFSIterator<T, k>(nullptr);
+            }
+        }
 
         BFSIterator<T, k> begin_bfs() const { return BFSIterator<T, k>(root); }
 
@@ -83,18 +142,33 @@ namespace ariel {
 
         DFSIterator<T, k> end_dfs() const { return DFSIterator<T, k>(nullptr); }
 
-        template<typename Iterator>
-        std::pair<Iterator, Iterator> myHeap(Iterator first, Iterator last) {
-            std::vector<Node<T> *> vec;
-            while (first != last) {
-                vec.push_back(&(*first));
-                ++first;
+
+        std::vector<T> myHeap() const {
+            std::cout << "Entering myHeap()" << std::endl;
+            std::vector<T> values;
+            std::cout << "Collecting values from DFS traversal:" << std::endl;
+            for (auto it = begin_dfs(); it != end_dfs(); ++it) {
+                std::cout << "  Adding value: " << it->value << std::endl;
+                values.push_back(it->value);
             }
-            std::make_heap(vec.begin(), vec.end(), [](Node<T> *a, Node<T> *b) {
-                return a->value > b->value;
-            });
-            return std::make_pair(Iterator(vec.begin(), vec.end()), Iterator(vec.end(), vec.end()));
+
+            std::cout << "Sorting values:" << std::endl;
+            std::sort(values.begin(), values.end());
+            for (const auto& val : values) {
+                std::cout << "  " << val << std::endl;
+            }
+
+            std::cout << "Removing duplicates:" << std::endl;
+            auto last = std::unique(values.begin(), values.end());
+            values.erase(last, values.end());
+            for (const auto& val : values) {
+                std::cout << "  " << val << std::endl;
+            }
+
+            std::cout << "Returning values" << std::endl;
+            return values;
         }
+
 
         friend std::ostream &operator<<(std::ostream &os, const Tree &tree) {
             tree.print(os, tree.root, 0);
@@ -109,7 +183,6 @@ namespace ariel {
 
             drawNode(scene, root, xOffset + scene->width() / 4, yOffset, hSpacing, vSpacing, 0);
         }
-
     };
 
 } // namespace ariel
